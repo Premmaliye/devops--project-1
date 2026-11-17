@@ -9,6 +9,8 @@ const analyticsRoutes = require('./analytics.routes');
 // Root & Health
 router.get('/', infoController.getInfo);
 router.get('/health', infoController.getHealth);
+router.get('/health/mqtt', infoController.getMqttHealth);
+router.get('/api/mqtt/status', infoController.getMqttHealth);
 
 // API subroutes
 router.use('/api/meters', meterRoutes);

@@ -27,6 +27,16 @@ describe('Root & Health Endpoints', () => {
     });
   });
 
+  describe('GET /health/mqtt', () => {
+    it('should return MQTT broker status', async () => {
+      const res = await request(app).get('/health/mqtt');
+      expect([200, 503]).toContain(res.statusCode);
+      expect(res.body).toHaveProperty('mqtt');
+      expect(res.body.mqtt).toHaveProperty('status');
+      expect(res.body.mqtt).toHaveProperty('topic', 'meters/+/telemetry');
+    });
+  });
+
   describe('404 Not Found Handling', () => {
     it('should return 404 for non-existent route', async () => {
       const res = await request(app).get('/api/non-existent-route');

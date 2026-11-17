@@ -50,7 +50,19 @@ const getHealth = async (req, res) => {
   });
 };
 
+const getMqttHealth = (req, res) => {
+  const mqttStatus = mqttSubscriber.getStatus();
+  const isConnected = mqttStatus.status === 'CONNECTED';
+
+  res.status(isConnected ? 200 : 503).json({
+    success: true,
+    timestamp: new Date().toISOString(),
+    mqtt: mqttStatus
+  });
+};
+
 module.exports = {
   getInfo,
-  getHealth
+  getHealth,
+  getMqttHealth
 };
