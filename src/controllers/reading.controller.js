@@ -1,23 +1,27 @@
-const store = require('../data/store');
+const repository = require('../data/repository');
 
-const getReadings = (req, res) => {
-  const { meter_id, limit, start_time, end_time } = req.query;
+const getReadings = async (req, res, next) => {
+  try {
+    const { meter_id, limit, start_time, end_time } = req.query;
 
-  const readings = store.getReadings({
-    meter_id,
-    limit,
-    start_time,
-    end_time
-  });
+    const readings = await repository.getReadings({
+      meter_id,
+      limit,
+      start_time,
+      end_time
+    });
 
-  res.status(200).json({
-    success: true,
-    count: readings.length,
-    data: readings
-  });
+    res.status(200).json({
+      success: true,
+      count: readings.length,
+      data: readings
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 
-const submitReading = (req, res) => {
+const submitReading = async (req, res) => {
   const { meter_id, meter_name, voltage, current, power_kw, energy_kwh, timestamp } = req.body;
 
   if (meter_id === undefined || meter_id === null) {
@@ -35,7 +39,7 @@ const submitReading = (req, res) => {
   }
 
   try {
-    const reading = store.addReading({
+    const reading = await repository.addReading({
       meter_id,
       meter_name,
       voltage,
@@ -62,4 +66,3 @@ module.exports = {
   getReadings,
   submitReading
 };
-

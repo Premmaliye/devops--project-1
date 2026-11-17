@@ -1,4 +1,5 @@
 const pkg = require('../../package.json');
+const db = require('../db/pool');
 
 const getInfo = (req, res) => {
   res.status(200).json({
@@ -7,6 +8,7 @@ const getInfo = (req, res) => {
     version: pkg.version || '1.0.0',
     status: 'running',
     environment: process.env.NODE_ENV || 'development',
+    database_mode: db.isDbConfigured() ? 'PostgreSQL' : 'In-Memory',
     uptime_seconds: Math.floor(process.uptime()),
     endpoints: {
       'GET /': 'Application info',
@@ -21,10 +23,13 @@ const getInfo = (req, res) => {
   });
 };
 
-const getHealth = (req, res) => {
+const getHealth = async (req, res) => {
   const memoryUsage = process.memoryUsage();
-  res.status(200).json({
-    status: 'UP',
+  const dbHealth = await db.checkHealth();
+  const isHealthy = dbHealth.status !== 'UNHEALTHY';
+
+  res.status(isHealthy ? 200 : 503).json({
+    status: isHealthy ? 'UP' : 'DEGRADED',
     timestamp: new Date().toISOString(),
     uptime_seconds: Math.floor(process.uptime()),
     system: {
@@ -36,7 +41,7 @@ const getHealth = (req, res) => {
       }
     },
     checks: {
-      data_store: 'HEALTHY'
+      database: dbHealth
     }
   });
 };
@@ -45,4 +50,3 @@ module.exports = {
   getInfo,
   getHealth
 };
-

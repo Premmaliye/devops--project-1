@@ -1,29 +1,37 @@
-const store = require('../data/store');
+const repository = require('../data/repository');
 
-const getMeters = (req, res) => {
-  const meters = store.getAllMeters();
-  res.status(200).json({
-    success: true,
-    count: meters.length,
-    data: meters
-  });
-};
-
-const getMeterById = (req, res) => {
-  const meter = store.getMeterById(req.params.id);
-  if (!meter) {
-    return res.status(404).json({
-      success: false,
-      error: `Meter with id ${req.params.id} not found`
+const getMeters = async (req, res, next) => {
+  try {
+    const meters = await repository.getAllMeters();
+    res.status(200).json({
+      success: true,
+      count: meters.length,
+      data: meters
     });
+  } catch (err) {
+    next(err);
   }
-  res.status(200).json({
-    success: true,
-    data: meter
-  });
 };
 
-const registerMeter = (req, res) => {
+const getMeterById = async (req, res, next) => {
+  try {
+    const meter = await repository.getMeterById(req.params.id);
+    if (!meter) {
+      return res.status(404).json({
+        success: false,
+        error: `Meter with id ${req.params.id} not found`
+      });
+    }
+    res.status(200).json({
+      success: true,
+      data: meter
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const registerMeter = async (req, res) => {
   const { id, name, location, status } = req.body;
 
   if (!id) {
@@ -34,7 +42,7 @@ const registerMeter = (req, res) => {
   }
 
   try {
-    const newMeter = store.addMeter({ id, name, location, status });
+    const newMeter = await repository.addMeter({ id, name, location, status });
     res.status(201).json({
       success: true,
       message: 'Meter successfully registered',
@@ -54,4 +62,3 @@ module.exports = {
   getMeterById,
   registerMeter
 };
-

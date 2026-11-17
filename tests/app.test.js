@@ -22,7 +22,8 @@ describe('Root & Health Endpoints', () => {
       expect(res.body).toHaveProperty('timestamp');
       expect(res.body).toHaveProperty('uptime_seconds');
       expect(res.body.system).toHaveProperty('node_version');
-      expect(res.body.checks).toHaveProperty('data_store', 'HEALTHY');
+      expect(res.body.checks).toHaveProperty('database');
+      expect(res.body.checks.database).toHaveProperty('status');
     });
   });
 
