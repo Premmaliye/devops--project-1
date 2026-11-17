@@ -1,5 +1,6 @@
 require('dotenv').config();
 const app = require('./app');
+const { initMqttSubscriber, stopMqttSubscriber } = require('./mqtt/subscriber');
 
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || '0.0.0.0';
@@ -10,11 +11,17 @@ const server = app.listen(PORT, HOST, () => {
   console.log(`   Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`   Health Check: http://${HOST}:${PORT}/health`);
   console.log(`===============================================`);
+
+  // Initialize background MQTT ingestion subscriber
+  initMqttSubscriber();
 });
 
 // Graceful shutdown handling for Docker & Kubernetes
 const handleShutdown = (signal) => {
   console.log(`\nReceived ${signal}. Shutting down gracefully...`);
+  
+  stopMqttSubscriber();
+
   server.close(() => {
     console.log('HTTP server closed. Exiting process.');
     process.exit(0);
@@ -31,4 +38,3 @@ process.on('SIGTERM', () => handleShutdown('SIGTERM'));
 process.on('SIGINT', () => handleShutdown('SIGINT'));
 
 module.exports = server;
-

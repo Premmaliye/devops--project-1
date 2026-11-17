@@ -1,5 +1,6 @@
 const pkg = require('../../package.json');
 const db = require('../db/pool');
+const mqttSubscriber = require('../mqtt/subscriber');
 
 const getInfo = (req, res) => {
   res.status(200).json({
@@ -9,6 +10,7 @@ const getInfo = (req, res) => {
     status: 'running',
     environment: process.env.NODE_ENV || 'development',
     database_mode: db.isDbConfigured() ? 'PostgreSQL' : 'In-Memory',
+    mqtt_broker: process.env.MQTT_BROKER_URL ? 'Connected' : 'Disabled',
     uptime_seconds: Math.floor(process.uptime()),
     endpoints: {
       'GET /': 'Application info',
@@ -26,6 +28,7 @@ const getInfo = (req, res) => {
 const getHealth = async (req, res) => {
   const memoryUsage = process.memoryUsage();
   const dbHealth = await db.checkHealth();
+  const mqttStatus = mqttSubscriber.getStatus();
   const isHealthy = dbHealth.status !== 'UNHEALTHY';
 
   res.status(isHealthy ? 200 : 503).json({
@@ -41,7 +44,8 @@ const getHealth = async (req, res) => {
       }
     },
     checks: {
-      database: dbHealth
+      database: dbHealth,
+      mqtt: mqttStatus
     }
   });
 };

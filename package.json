@@ -9,7 +9,8 @@
     "test": "jest --runInBand",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "simulate": "node scripts/simulate-iot.js"
+    "simulate": "node scripts/simulate-iot.js",
+    "simulate:mqtt": "node scripts/simulate-iot.js --mqtt"
   },
   "keywords": [
     "energy-monitor",
@@ -25,6 +26,7 @@
     "dotenv": "^18.0.10",
     "express": "^5.3.0",
     "morgan": "^1.12.1",
+    "mqtt": "^5.16.1",
     "pg": "^8.23.1"
   },
   "devDependencies": {
