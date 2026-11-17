@@ -16,3 +16,4 @@ router.use('/api/readings', readingRoutes);
 router.use('/api/analytics', analyticsRoutes);
 
 module.exports = router;
+

@@ -264,3 +264,4 @@ class DataStore {
 
 // Export singleton instance
 module.exports = new DataStore();
+

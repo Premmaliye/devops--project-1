@@ -6,3 +6,4 @@ router.get('/', readingController.getReadings);
 router.post('/', readingController.submitReading);
 
 module.exports = router;
+

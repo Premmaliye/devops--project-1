@@ -112,3 +112,4 @@ npm run simulate
 - [ ] **Phase 5:** GitHub Actions CI/CD pipeline (lint, test, build, push to AWS ECR)
 - [ ] **Phase 6:** AWS Infrastructure with Terraform (VPC, ECR, EKS cluster)
 - [ ] **Phase 7:** Kubernetes Deployment, Helm charts, and Prometheus/Grafana monitoring
+

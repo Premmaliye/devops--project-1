@@ -7,3 +7,4 @@ router.get('/:id', meterController.getMeterById);
 router.post('/', meterController.registerMeter);
 
 module.exports = router;
+
