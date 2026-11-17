@@ -1,0 +1,43 @@
+{
+  "name": "energy-monitor-api",
+  "version": "1.0.0",
+  "description": "Energy Monitor REST API for IoT smart meters and DevOps pipelines",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "jest --runInBand",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "simulate": "node scripts/simulate-iot.js"
+  },
+  "keywords": [
+    "energy-monitor",
+    "iot",
+    "devops",
+    "docker",
+    "kubernetes",
+    "rest-api"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^18.0.10",
+    "express": "^5.3.0",
+    "morgan": "^1.12.1"
+  },
+  "devDependencies": {
+    "jest": "^30.5.2",
+    "nodemon": "^3.1.14",
+    "supertest": "^7.3.2"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "transform": {},
+    "watchman": false,
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ],
+    "verbose": true
+  }
+}
