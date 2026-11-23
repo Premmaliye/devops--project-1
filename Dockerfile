@@ -34,6 +34,7 @@ RUN apk --no-cache add ca-certificates
 COPY --from=dependencies /usr/src/app/node_modules ./node_modules
 COPY package*.json ./
 COPY src/ ./src/
+COPY public/ ./public/
 
 # Run as non-privileged user 'node' (built into node images)
 USER node
