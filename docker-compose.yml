@@ -63,13 +63,14 @@ services:
   # Local AWS Simulator: LocalStack (Port 4566)
   # ==========================================
   localstack:
-    image: localstack/localstack:3.8.0
+    image: localstack/localstack:latest
     container_name: energy-monitor-localstack
     restart: unless-stopped
     ports:
       - "4566:4566"
     environment:
-      - SERVICES=s3,secretsmanager,cloudwatch,iam,sts
+      - LOCALSTACK_AUTH_TOKEN=ls-JEbUxuQE-zAqE-QiHA-2010-CuVU55936f04
+      - SERVICES=ecr,s3,secretsmanager,cloudwatch,iam,sts
       - DOCKER_HOST=unix:///var/run/docker.sock
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
