@@ -71,3 +71,4 @@ resource "aws_eks_cluster" "main" {
     Name = var.cluster_name
   }
 }
+

@@ -12,3 +12,4 @@ node_instance_types  = ["t3.medium"]
 node_desired_capacity = 2
 node_min_capacity     = 1
 node_max_capacity     = 4
+

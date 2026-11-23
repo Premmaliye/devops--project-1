@@ -73,3 +73,4 @@ variable "node_max_capacity" {
   type        = number
   default     = 4
 }
+

@@ -48,6 +48,34 @@ services:
       - mosquitto_data:/mosquitto/data
 
   # ==========================================
+  # Local Container Registry (AWS ECR Replica: Port 5001)
+  # ==========================================
+  registry:
+    image: registry:2
+    container_name: energy-monitor-registry
+    restart: unless-stopped
+    ports:
+      - "5001:5000"
+    volumes:
+      - registry_data:/var/lib/registry
+
+  # ==========================================
+  # Local AWS Simulator: LocalStack (Port 4566)
+  # ==========================================
+  localstack:
+    image: localstack/localstack:3.8.0
+    container_name: energy-monitor-localstack
+    restart: unless-stopped
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=s3,secretsmanager,cloudwatch,iam,sts
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - localstack_data:/var/lib/localstack
+
+  # ==========================================
   # Backend: Energy Monitor REST API & Ingestion
   # ==========================================
   energy-monitor-api:
@@ -79,3 +107,5 @@ services:
 volumes:
   postgres_data:
   mosquitto_data:
+  registry_data:
+  localstack_data:

@@ -66,3 +66,4 @@ resource "aws_eks_node_group" "main" {
     Name = "${var.cluster_name}-worker-node"
   }
 }
+

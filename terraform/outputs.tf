@@ -36,3 +36,4 @@ output "configure_kubectl" {
   description = "Run this command on your terminal to connect kubectl to your new EKS cluster"
   value       = "aws eks update-kubeconfig --region ${var.aws_region} --name ${aws_eks_cluster.main.name}"
 }
+

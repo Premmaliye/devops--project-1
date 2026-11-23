@@ -11,7 +11,8 @@
     "test:coverage": "jest --coverage",
     "lint": "eslint src/ scripts/",
     "simulate": "node scripts/simulate-iot.js",
-    "simulate:mqtt": "node scripts/simulate-iot.js --mqtt"
+    "simulate:mqtt": "node scripts/simulate-iot.js --mqtt",
+    "localstack:setup": "bash scripts/localstack-setup.sh"
   },
   "keywords": [
     "energy-monitor",
