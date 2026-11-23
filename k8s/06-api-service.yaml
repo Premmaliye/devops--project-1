@@ -1,0 +1,21 @@
+# ========================================================
+# Energy Monitor API Service (LoadBalancer & NodePort)
+# ========================================================
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: energy-monitor-api-service
+  namespace: energy-monitoring
+  labels:
+    app: energy-monitor-api
+spec:
+  type: LoadBalancer # Automatically provisions an AWS Network/Application Load Balancer on EKS
+  ports:
+    - port: 3000
+      targetPort: 3000
+      protocol: TCP
+      name: http
+      nodePort: 30080
+  selector:
+    app: energy-monitor-api

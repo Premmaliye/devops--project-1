@@ -1,0 +1,117 @@
+# ========================================================
+# PostgreSQL StatefulSet & Storage for Kubernetes
+# ========================================================
+
+# 1. ConfigMap containing the database initialization SQL
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init-sql
+  namespace: energy-monitoring
+data:
+  init.sql: |
+    CREATE TABLE IF NOT EXISTS meters (
+        id INTEGER PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        location VARCHAR(255) DEFAULT 'Default Site',
+        status VARCHAR(50) DEFAULT 'ACTIVE',
+        created_at TIMESTAMPTZ DEFAULT NOW()
+    );
+
+    CREATE TABLE IF NOT EXISTS readings (
+        id SERIAL PRIMARY KEY,
+        meter_id INTEGER NOT NULL REFERENCES meters(id) ON DELETE CASCADE,
+        meter_name VARCHAR(255),
+        voltage NUMERIC(6, 2) NOT NULL,
+        current NUMERIC(6, 2) NOT NULL,
+        power_kw NUMERIC(8, 2) NOT NULL,
+        energy_kwh NUMERIC(10, 2) NOT NULL,
+        timestamp TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_readings_meter_id ON readings(meter_id);
+    CREATE INDEX IF NOT EXISTS idx_readings_timestamp ON readings(timestamp DESC);
+
+    INSERT INTO meters (id, name, location, status, created_at)
+    VALUES 
+        (20301, 'Main Feeder Meter 1', 'Building A - Substation 1', 'ACTIVE', NOW()),
+        (20302, 'HVAC Plant Meter 2', 'Building A - Roof Plant', 'ACTIVE', NOW())
+    ON CONFLICT (id) DO NOTHING;
+---
+# 2. Headless Service for Stable DNS (energy-monitor-db.energy-monitoring.svc.cluster.local)
+apiVersion: v1
+kind: Service
+metadata:
+  name: energy-monitor-db
+  namespace: energy-monitoring
+  labels:
+    app: postgres
+spec:
+  ports:
+    - port: 5432
+      name: postgres
+  clusterIP: None
+  selector:
+    app: postgres
+---
+# 3. PostgreSQL StatefulSet
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: energy-monitoring
+spec:
+  serviceName: "energy-monitor-db"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports:
+            - containerPort: 5432
+              name: postgres
+          envFrom:
+            - secretRef:
+                name: energy-monitor-secrets
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+            - name: init-script
+              mountPath: /docker-entrypoint-initdb.d/init.sql
+              subPath: init.sql
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          livenessProbe:
+            exec:
+              command: ["psql", "-w", "-U", "postgres", "-d", "energy_monitor", "-c", "SELECT 1"]
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command: ["psql", "-w", "-U", "postgres", "-d", "energy_monitor", "-c", "SELECT 1"]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+      volumes:
+        - name: init-script
+          configMap:
+            name: postgres-init-sql
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 2Gi

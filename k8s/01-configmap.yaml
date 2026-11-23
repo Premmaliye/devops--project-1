@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: energy-monitor-config
+  namespace: energy-monitoring
+data:
+  PORT: "3000"
+  HOST: "0.0.0.0"
+  NODE_ENV: "production"
+  DB_HOST: "energy-monitor-db"
+  DB_PORT: "5432"
+  DB_NAME: "energy_monitor"
+  MQTT_BROKER_URL: "mqtt://energy-monitor-mqtt:1883"
