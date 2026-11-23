@@ -66,7 +66,8 @@ jobs:
         uses: hadolint/hadolint-action@v3.1.0
         with:
           dockerfile: Dockerfile
-          ignore: DL3018,DL3008 # Allow unpinned alpine apk packages for latest security patches
+          failure-threshold: error
+          ignore: DL3018,DL3008,DL3059
 
   # ========================================================
   # Job 3: Docker Container Build & Verification

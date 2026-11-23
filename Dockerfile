@@ -10,11 +10,8 @@ RUN apk add --no-cache libc6-compat
 
 COPY package*.json ./
 
-# Install full dependencies (including dev for testing if needed)
-RUN npm ci
-
-# Prune dev dependencies for production artifact
-RUN npm prune --omit=dev
+# Install full dependencies and prune dev dependencies for production artifact
+RUN npm ci && npm prune --omit=dev
 
 # ==========================================
 # Stage 2: Final Production Runner
